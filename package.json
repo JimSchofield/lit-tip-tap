@@ -1,6 +1,6 @@
 {
   "name": "lit-tip-tap",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "type": "module",
   "main": "./dist/lit-tip-tap.js",
   "module": "./dist/lit-tip-tap.js",

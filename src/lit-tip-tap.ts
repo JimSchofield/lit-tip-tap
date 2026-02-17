@@ -21,21 +21,21 @@ export class LitTipTap extends LitElement {
   @property({ attribute: false })
   extensions: AnyExtension[] = [];
 
-  #createEditor(extraExtensions: AnyExtension[]): Editor {
-    const extensions = [
-      ...(extraExtensions.length > 0 ? extraExtensions : [StarterKit]),
-      this.#eventsExtension,
-    ];
-
-    return new Editor({ extensions, injectCSS: true });
+  #createEditor(extensions: AnyExtension[]): Editor {
+    return new Editor({
+      extensions: [
+        ...(extensions.length > 0 ? extensions : [StarterKit]),
+        this.#eventsExtension,
+      ],
+      injectCSS: true,
+    });
   }
 
-  addExtension(...newExtensions: AnyExtension[]): void {
+  #reinitEditor(): void {
     const content = this.tiptap.getJSON();
     const mountEl = this._tipTapEl.value;
 
     this.tiptap.destroy();
-    this.extensions = [...this.extensions, ...newExtensions];
     this.tiptap = this.#createEditor(this.extensions);
 
     if (mountEl) {
@@ -77,6 +77,12 @@ export class LitTipTap extends LitElement {
     els.forEach((el) => {
       el.tiptap = this.tiptap;
     });
+  }
+
+  override willUpdate(changed: Map<PropertyKey, unknown>): void {
+    if (changed.has('extensions') && this._tipTapEl.value) {
+      this.#reinitEditor();
+    }
   }
 
   firstUpdated(): void {

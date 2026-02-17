@@ -9,6 +9,10 @@
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/lit-tip-tap.js"
+    },
+    "./registered": {
+      "types": "./dist/index.registered.d.ts",
+      "import": "./dist/lit-tip-tap.registered.js"
     }
   },
   "files": [

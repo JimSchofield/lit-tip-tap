@@ -4,9 +4,11 @@ export default defineConfig({
   publicDir: false,
   build: {
     lib: {
-      entry: 'src/index.ts',
+      entry: {
+        'lit-tip-tap': 'src/index.ts',
+        'lit-tip-tap.registered': 'src/index.registered.ts',
+      },
       formats: ['es'],
-      fileName: 'lit-tip-tap',
     },
     emptyOutDir: false,
     rollupOptions: {

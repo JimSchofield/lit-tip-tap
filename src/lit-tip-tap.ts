@@ -1,61 +1,49 @@
-import { LitElement, html, css } from 'lit';
-import { customElement, property } from 'lit/decorators.js';
+import { LitElement, html } from 'lit';
+import { property } from 'lit/decorators.js';
 import { Editor, type AnyExtension } from '@tiptap/core';
 import StarterKit from '@tiptap/starter-kit';
 import { createRef, ref } from 'lit/directives/ref.js';
+import defaultStyles from './basic.styles';
 
 import { Extension } from '@tiptap/core';
 
-@customElement('lit-tip-tap')
 export class LitTipTap extends LitElement {
-  static override styles = css`
-    code {
-      background-color: rgba(0, 0, 0, 0.05);
-      border-radius: 0.25em;
-      padding: 0.15em 0.3em;
-      font-size: 0.9em;
-    }
+  static override styles = defaultStyles;
 
-    pre code {
-      display: block;
-      background-color: rgba(0, 0, 0, 0.05);
-      border-radius: 0.375em;
-      padding: 0.75em 1em;
-      font-size: 0.9em;
-    }
-
-    blockquote {
-      border-left: 3px solid rgba(0, 0, 0, 0.2);
-      margin-left: 0.5rem;
-      padding-left: 0.5rem;
-    }
-  `;
-
-  EventsExtenension = Extension.create({
+  #eventsExtension = Extension.create({
     onUpdate: () => {
       this.dispatchEvent(new Event('change'));
     },
   });
 
-  tiptap: Editor;
+  tiptap!: Editor;
 
   @property({ attribute: false })
   extensions: AnyExtension[] = [];
 
-  constructor(customExtensions: AnyExtension[] = []) {
-    super();
-
-    const extensionsInputs = [...customExtensions, ...this.extensions];
-
+  #createEditor(extraExtensions: AnyExtension[]): Editor {
     const extensions = [
-      ...(extensionsInputs?.length > 0 ? extensionsInputs : [StarterKit]),
-      this.EventsExtenension,
+      ...(extraExtensions.length > 0 ? extraExtensions : [StarterKit]),
+      this.#eventsExtension,
     ];
 
-    this.tiptap = new Editor({
-      extensions,
-      injectCSS: true,
-    });
+    return new Editor({ extensions, injectCSS: true });
+  }
+
+  addExtension(...newExtensions: AnyExtension[]): void {
+    const content = this.tiptap.getJSON();
+    const mountEl = this._tipTapEl.value;
+
+    this.tiptap.destroy();
+    this.extensions = [...this.extensions, ...newExtensions];
+    this.tiptap = this.#createEditor(this.extensions);
+
+    if (mountEl) {
+      this.tiptap.mount(mountEl);
+      this.tiptap.commands.setContent(content);
+    }
+
+    this.#provideEditorToSlots();
   }
 
   _tipTapEl = createRef<HTMLDivElement>();
@@ -78,15 +66,17 @@ export class LitTipTap extends LitElement {
   connectedCallback() {
     super.connectedCallback();
 
+    this.tiptap = this.#createEditor(this.extensions);
+
     this.#provideEditorToSlots();
   }
 
   #provideEditorToSlots() {
-    const el = this.querySelector<HTMLElement & { tiptap: Editor }>('[slot]');
+    const els = this.querySelectorAll<Element & { tiptap: Editor }>('[slot]');
 
-    if (el) {
+    els.forEach((el) => {
       el.tiptap = this.tiptap;
-    }
+    });
   }
 
   firstUpdated(): void {
@@ -125,11 +115,5 @@ export class LitTipTap extends LitElement {
       <slot name="toolbar"></slot>
       <div ${ref(this._tipTapEl)}></div>
     </div>`;
-  }
-}
-
-declare global {
-  interface HTMLElementTagNameMap {
-    'lit-tip-tap': LitTipTap;
   }
 }

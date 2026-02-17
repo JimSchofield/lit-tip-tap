@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>lit-tip-tap</title>
+    <link rel="stylesheet" href="./src/index.css" />
+    <script type="module" src="/src/lit-tip-tap.ts"></script>
+    <script type="module" src="/src/lit-tip-tap-toolbar.ts"></script>
+  </head>
+  <body>
+    <lit-tip-tap>
+      <lit-tip-tap-toolbar slot="toolbar"></lit-tip-tap-toolbar>
+      <template>
+        <h1>Test title</h1>
+        <p>
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Culpa harum
+          ipsa accusamus dolorum ad libero cupiditate quibusdam voluptas in,
+          dolore porro fugit fuga ex exercitationem animi commodi a, ut
+          consectetur.
+        </p>
+
+        <h2>Heading 2</h2>
+
+        <ul>
+          <li>Testing!</li>
+          <li>Testing again!</li>
+        </ul>
+
+        <blockquote>Test</blockquote>
+
+        <code> function hello() { console.log("Hello!") } </code>
+      </template>
+    </lit-tip-tap>
+
+    <script>
+      document.querySelector('lit-tip-tap').addEventListener('change', (e) => {
+        console.log('[change] ', event.target.html);
+      });
+      document.querySelector('lit-tip-tap').addEventListener('blur', (e) => {
+        console.log('[blur] ', event.target.html);
+      });
+      document.querySelector('lit-tip-tap').addEventListener('focus', (e) => {
+        console.log('[focus] ', event.target.html);
+      });
+    </script>
+  </body>
+</html>
